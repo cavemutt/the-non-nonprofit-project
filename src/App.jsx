@@ -1,19 +1,58 @@
-// import { useState } from 'react'
-import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import { useState, useEffect } from 'react'
+import {BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+// import 'bootstrap/dist/css/bootstrap.min.css'
 import Home from './Components/Home'
 import Info from './Components/Info'
 import Signup from './Components/Signup'
+import Organizations from './Components/Organizations'
+import Logo from './assets/non-nonprofit.png'
 import './App.css'
 
 function App() {
-  // const [count, setCount] = useState(0)
 
-  // async function getOrgs() {
-  //   const res = await fetch('https://6510b7753ce5d181df5d78c0.mockapi.io/companies')
-  //   const data = await res.json()
+  const [apiData, setApiData] = useState([])
+  // const {isBurgerOpen, setIsBurgerOpen} = useState(false)
 
-  //   console.log(data)
+  // let location = useLocation()
+  
+
+  const url = 'https://6510b7753ce5d181df5d78c0.mockapi.io/companies'
+ 
+  const getData = async () => {
+      const res = await fetch(url)
+      const data = await res.json() 
+      setApiData(data)
+  }
+
+  useEffect(() => {
+      getData()
+  },[])
+
+  // const location = useLocation();
+  // const lastElement = location.pathname.split("/").pop();
+  // console.log(location) gives error about can't access location, useContext yata yata
+
+  const path = (e) => {
+    if(e.target.className === 'logo') {
+      console.log('home page!'); 
+      e.target.parentElement.parentElement.offsetParent.className = 'nav'      
+    } else if(e.target.href.endsWith('/orgs')) {
+      console.log('org page!'); 
+      e.target.parentElement.offsetParent.className = 'nav org-nav'
+    } else if(e.target.href.endsWith('/info')) {
+      console.log('info page!'); 
+      e.target.parentElement.offsetParent.className = 'nav info-nav'
+    } else if(e.target.href.endsWith('/signup')) {
+      console.log('signup page!'); 
+      e.target.parentElement.offsetParent.className = 'nav signup-nav'
+    }
+  }
+
+  // const burgerMenu = () => {
+  //   // if home page, scroll down to menu section or not appear
+  //   // other pages toggle 'open' class on burger and menu
+  //   document.querySelector('.nav').classList.toggle('open')
+  //   document.querySelector('.burger-menu').classList.toggle('open')
   // }
 
   return (
@@ -22,31 +61,40 @@ function App() {
 
      <Router>
           <div>
-            <nav className="top-nav">
+            <button className='burger-menu' role='button' ><div className='burger-line'></div></button>
+            <nav className="nav">
               <ul>
                 <li>
-                  <Link to="/">Home</Link>
+                  <Link to="/" onClick={(e) => path(e)}><img src={Logo} className="logo"></img></Link>
                 </li>
                 <li>
-                  <Link to="/info">Info</Link>
+                  <Link to="/orgs" className='button orgs-link' onClick={(e) => path(e)}>Help Out Now!</Link>
                 </li>
                 <li>
-                  <Link to="/signup">Signup</Link>
+                  <Link to="/info" className='button info-link' onClick={(e) => path(e)}>How it Works...</Link>
+                </li>
+                <li>
+                  <Link to="/signup" className='button signup-link' onClick={(e) => path(e)}>Sign Up Your Organization</Link>
                 </li>
               </ul>
             </nav>
+            
 
             <Switch>
 
-              <Route path="/signup">
-                <Signup />
+              <Route path="/signup" onClick={(e) => path(e)}>
+                <Signup getData={getData} apiData={apiData} />
               </Route>
 
-              <Route path="/info">
+              <Route path="/orgs" onClick={(e) => path(e)}>
+                <Organizations getData={getData} apiData={apiData} />
+              </Route>
+
+              <Route path="/info" onClick={(e) => path(e)}>
                 <Info />
               </Route>
 
-              <Route exact path="/">
+              <Route exact path="/" onClick={(e) => path(e)}>
                 <Home />
               </Route>
 
@@ -54,10 +102,28 @@ function App() {
           </div>
       </Router>
 
-      {/* <h1>The Non-Org Project</h1> */}
-      {/* <button onClick={getOrgs}>click</button> */}
     </>
   )
 }
 
 export default App
+
+// Next Steps :
+// burger menu on smaller sizes on pages needed
+// -- worked on, could be better --> look good on all device sizes
+// local storage for hasLoadedBefore to control animations
+// animations/parallax
+// aria labels/accessibility checks
+// scroll to update section on update button click
+// dynamically displayed footer with however many photo credits needed
+
+// on Signup page
+// need to verify password with second entry
+// need to hash password and store separately
+
+// on Org page 
+// - login popup to authenticate when update or delete is clicked 
+// - action for forgot/reset password needed 
+
+// the textarea and org displays need cleaning up, look neater 
+// use a real database, real urls
