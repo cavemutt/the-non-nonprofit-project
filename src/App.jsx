@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import {BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-// import 'bootstrap/dist/css/bootstrap.min.css'
 import Home from './Components/Home'
 import Info from './Components/Info'
 import Signup from './Components/Signup'
@@ -11,10 +10,6 @@ import './App.css'
 function App() {
 
   const [apiData, setApiData] = useState([])
-  // const {isBurgerOpen, setIsBurgerOpen} = useState(false)
-
-  // let location = useLocation()
-  
 
   const url = 'https://6510b7753ce5d181df5d78c0.mockapi.io/companies'
  
@@ -28,11 +23,10 @@ function App() {
       getData()
   },[])
 
-  // const location = useLocation();
-  // const lastElement = location.pathname.split("/").pop();
-  // console.log(location) gives error about can't access location, useContext yata yata
-
   const path = (e) => {
+    document.querySelector('.burger-menu').classList.remove('open')
+    window.scrollTo(0, 0)
+
     if(e.target.className === 'logo') {
       console.log('home page!'); 
       e.target.parentElement.parentElement.offsetParent.className = 'nav'      
@@ -48,12 +42,17 @@ function App() {
     }
   }
 
-  // const burgerMenu = () => {
-  //   // if home page, scroll down to menu section or not appear
-  //   // other pages toggle 'open' class on burger and menu
-  //   document.querySelector('.nav').classList.toggle('open')
-  //   document.querySelector('.burger-menu').classList.toggle('open')
-  // }
+  const burgerMenu = (e) => {
+    const nav = document.querySelector('.nav')
+    const navPosition = nav.offsetTop
+
+    if(e.target.parentElement.lastChild.className === 'home-page') {
+      window.scrollTo(0, navPosition)
+    } else {
+      nav.classList.toggle('open')
+      document.querySelector('.burger-menu').classList.toggle('open')
+    }
+  }
 
   return (
     
@@ -61,14 +60,18 @@ function App() {
 
      <Router>
           <div>
-            <button className='burger-menu' role='button' ><div className='burger-line'></div></button>
+            <button className='burger-menu' role='button' onClick={(e) => burgerMenu(e)}>
+              <div className='burger-line-1'></div>
+              <div className='burger-line-2'></div>
+              <div className='burger-line-3'></div>
+            </button>
             <nav className="nav">
               <ul>
                 <li>
                   <Link to="/" onClick={(e) => path(e)}><img src={Logo} className="logo"></img></Link>
                 </li>
                 <li>
-                  <Link to="/orgs" className='button orgs-link' onClick={(e) => path(e)}>Help Out Now!</Link>
+                  <Link to="/orgs" className='button orgs-link' onClick={(e) => {path(e)}}>Help Out Now!</Link>
                 </li>
                 <li>
                   <Link to="/info" className='button info-link' onClick={(e) => path(e)}>How it Works...</Link>
